@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}TaskOrbit{% endblock %}</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar navbar-expand-lg navbar-dark to-navbar">
+    <div class="container">
+
+      <a class="navbar-brand" href="{{ url_for('main.home') }}">
+        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="TaskOrbit" height="44"/>
+      </a>
+
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.home') }}">Home</a>
+          </li>
+
+          {% if current_user.is_authenticated %}
+            <li class="nav-item ms-lg-2">
+              <span class="nav-link" style="color: var(--to-text-soft) !important;">
+                <i class="bi bi-person-circle me-1"></i>{{ current_user.username }}
+              </span>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('auth.logout') }}">
+                <i class="bi bi-box-arrow-right me-1"></i>Logout
+              </a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+            </li>
+            <li class="nav-item ms-lg-1">
+              <a class="btn to-btn-accent btn-sm px-3" href="{{ url_for('auth.register') }}">
+                Get Started
+              </a>
+            </li>
+          {% endif %}
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== FLASH MESSAGES ===== -->
+  <div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            {% if category == 'success' %}<i class="bi bi-check-circle-fill"></i>
+            {% elif category == 'danger' %}<i class="bi bi-exclamation-circle-fill"></i>
+            {% elif category == 'warning' %}<i class="bi bi-exclamation-triangle-fill"></i>
+            {% else %}<i class="bi bi-info-circle-fill"></i>{% endif %}
+            <span>{{ message }}</span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- ===== PAGE CONTENT ===== -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="to-footer">
+    <div class="container">
+      <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
+        <span class="fw-semibold" style="background: var(--to-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          TaskOrbit
+        </span>
+        <p class="mb-0 small" style="color: var(--to-text-muted);">
+          &copy; 2025 TaskOrbit — Stay in orbit, stay productive.
+        </p>
+        <p class="mb-0 small" style="color: var(--to-text-muted);">
+          Built by <span style="color: var(--to-text-soft); font-weight: 500;">Nihar Ranjan Patra</span>
+          <a href="https://github.com/Niharxd" target="_blank" rel="noopener" class="to-link ms-2"><i class="bi bi-github"></i></a>
+          <a href="https://www.linkedin.com/in/nihar-patra-2277np/" target="_blank" rel="noopener" class="to-link ms-1"><i class="bi bi-linkedin"></i></a>
+        </p>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

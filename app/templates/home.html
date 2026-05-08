@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}TaskOrbit — Manage Your Tasks{% endblock %}
+
+{% block content %}
+
+<!-- ===== HERO ===== -->
+<section class="to-hero">
+
+  <!-- Layered background -->
+  <div class="to-hero-bg">
+    <div class="to-hero-grid"></div>
+  </div>
+
+  <div class="container to-hero-inner">
+    <div class="row align-items-center gy-5">
+
+      <!-- Left: Text -->
+      <div class="col-lg-6 text-center text-lg-start">
+
+        <div class="to-hero-pill">
+          <span>Where productivity meets simplicity</span>
+        </div>
+
+        <h1 class="to-hero-title">
+          Manage Tasks.<br/>
+          <span class="to-highlight">Stay in Orbit.</span>
+        </h1>
+
+        <p class="to-hero-subtitle mx-auto mx-lg-0">
+          Stop juggling, start doing. TaskOrbit keeps everything in its place.
+        </p>
+
+        <div class="to-hero-cta d-flex gap-3 flex-wrap justify-content-center justify-content-lg-start">
+          {% if current_user.is_authenticated %}
+            <a href="#" class="btn to-btn-accent btn-lg px-4">
+              <i class="bi bi-grid-3x3-gap me-2"></i>Go to Dashboard
+            </a>
+          {% else %}
+            <a href="{{ url_for('auth.register') }}" class="btn to-btn-accent btn-lg px-4">
+              <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-4">
+              Login
+            </a>
+          {% endif %}
+        </div>
+
+        <!-- Stats -->
+        <div class="to-hero-stats justify-content-center justify-content-lg-start">
+          <div class="to-stat">
+            <div class="to-stat-number">Fast</div>
+            <div class="to-stat-label">Setup</div>
+          </div>
+          <div class="to-stat-divider d-none d-sm-block"></div>
+          <div class="to-stat">
+            <div class="to-stat-number">Track</div>
+            <div class="to-stat-label">Your Tasks</div>
+          </div>
+          <div class="to-stat-divider d-none d-sm-block"></div>
+          <div class="to-stat">
+            <div class="to-stat-number">Always</div>
+            <div class="to-stat-label">In Orbit</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: Floating mockup card -->
+      <div class="col-lg-6 d-none d-lg-flex justify-content-center justify-content-lg-end">
+        <div class="to-hero-mockup">
+          <div class="to-mock-card">
+            <div class="to-mock-header">
+              <span class="to-mock-dot" style="background:#f87171;"></span>
+              <span class="to-mock-dot" style="background:#fbbf24;"></span>
+              <span class="to-mock-dot" style="background:#4ade80;"></span>
+              <span class="ms-2" style="color:var(--to-text-muted); font-size:0.72rem; font-weight:500;">orbit dashboard</span>
+            </div>
+            <div class="to-mock-body">
+              <div class="to-mock-task done">
+                <i class="bi bi-check-circle-fill me-2" style="color:#4ade80;"></i>
+                <span>Design landing page</span>
+              </div>
+              <div class="to-mock-task done">
+                <i class="bi bi-check-circle-fill me-2" style="color:#4ade80;"></i>
+                <span>Set up Flask backend</span>
+              </div>
+              <div class="to-mock-task active">
+                <i class="bi bi-circle-half me-2" style="color:var(--to-accent);"></i>
+                <span>Build task dashboard</span>
+              </div>
+              <div class="to-mock-task">
+                <i class="bi bi-circle me-2" style="color:var(--to-text-muted);"></i>
+                <span>Add productivity stats</span>
+              </div>
+              <div class="to-mock-task">
+                <i class="bi bi-circle me-2" style="color:var(--to-text-muted);"></i>
+                <span>Deploy to production</span>
+              </div>
+            </div>
+            <div class="to-mock-footer">
+              <div class="d-flex justify-content-between align-items-center">
+                <span style="color:var(--to-text-muted); font-size:0.72rem;">2 of 5 completed</span>
+                <span style="color:var(--to-accent); font-size:0.72rem; font-weight:600;">40%</span>
+              </div>
+              <div class="to-mock-progress mt-2">
+                <div class="to-mock-progress-bar" style="width:40%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="to-steps">
+  <div class="container">
+    <div class="text-center mb-5">
+      <p class="to-section-eyebrow">How it works</p>
+      <h2 class="to-section-title">Up and running in minutes</h2>
+    </div>
+    <div class="row align-items-start g-4 g-lg-0 justify-content-center">
+      <div class="col-sm-6 col-lg-3">
+        <div class="to-step">
+          <div class="to-step-num">1</div>
+          <h6>Create an account</h6>
+          <p>A few details and you're ready to orbit.</p>
+        </div>
+      </div>
+      <div class="col-lg-1 d-none d-lg-flex align-items-center">
+        <div class="to-step-connector"></div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="to-step">
+          <div class="to-step-num">2</div>
+          <h6>Add your tasks</h6>
+          <p>Create tasks, set priorities, and organize your workflow.</p>
+        </div>
+      </div>
+      <div class="col-lg-1 d-none d-lg-flex align-items-center">
+        <div class="to-step-connector"></div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="to-step">
+          <div class="to-step-num">3</div>
+          <h6>Track & complete</h6>
+          <p>Mark tasks done, watch your progress, and stay motivated.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section class="to-features">
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="text-center mb-5">
+      <p class="to-section-eyebrow">Features</p>
+      <h2 class="to-section-title">Everything you need to stay on track</h2>
+      <p class="to-section-sub">Simple tools, powerful results.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="to-feature-card">
+          <div class="to-feature-icon-wrap"><i class="bi bi-arrow-repeat"></i></div>
+          <h5>Real-Time Updates</h5>
+          <p>Task changes reflect instantly across your workspace so you always see the latest state of your work.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="to-feature-card">
+          <div class="to-feature-icon-wrap"><i class="bi bi-bar-chart-line"></i></div>
+          <h5>Smart Analytics</h5>
+          <p>Understand your productivity patterns with clear progress metrics and completion trends over time.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="to-feature-card">
+          <div class="to-feature-icon-wrap"><i class="bi bi-shield-check"></i></div>
+          <h5>Secure Task Tracking</h5>
+          <p>Your tasks and account are protected with hashed credentials and session-based authentication.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+{% if not current_user.is_authenticated %}
+<section class="to-cta-strip">
+  <div class="container text-center to-cta-inner">
+    <p class="to-section-eyebrow">Get started today</p>
+    <h3 class="mb-3">Ready to launch your productivity?</h3>
+    <p class="mb-4" style="color:var(--to-text-muted); font-size:0.95rem;">
+      Your most productive self starts here.
+    </p>
+    <a href="{{ url_for('auth.register') }}" class="btn to-btn-accent btn-lg px-5">
+      <i class="bi bi-rocket-takeoff me-2"></i>Create Your Account
+    </a>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}
