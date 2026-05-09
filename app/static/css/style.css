@@ -853,3 +853,254 @@ body::after {
   .to-steps { padding: 4rem 0; }
   .to-features { padding: 4rem 0; }
 }
+
+/* =============================================
+   DASHBOARD
+   ============================================= */
+.to-dashboard-section {
+  min-height: calc(100vh - 70px);
+  background: var(--to-bg);
+  position: relative;
+}
+
+.to-dash-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--to-text);
+}
+
+.to-dash-subtitle {
+  font-size: 0.9rem;
+  color: var(--to-text-muted);
+}
+
+/* ── Stat Cards ── */
+.to-stat-card {
+  background: var(--to-surface);
+  border: 1px solid var(--to-border);
+  border-radius: 16px;
+  padding: 1.25rem 1.25rem 1rem;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.to-stat-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--to-border-hover);
+}
+
+.to-stat-card-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.to-stat-card-num {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--to-text);
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.to-stat-card-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--to-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* ── Progress Bar ── */
+.to-progress-track {
+  height: 4px;
+  background: var(--to-surface-3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.to-progress-fill {
+  height: 100%;
+  background: var(--to-gradient);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 8px rgba(108,143,255,0.4);
+}
+
+/* ── Task Cards ── */
+.to-task-card {
+  background: var(--to-surface);
+  border: 1px solid var(--to-border);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.to-task-card:hover {
+  border-color: var(--to-border-hover);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  transform: translateY(-2px);
+}
+
+.to-task-card.to-task-done {
+  opacity: 0.55;
+}
+
+.to-task-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.to-task-status-icon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.to-task-status-icon.done     { color: #34d399; }
+.to-task-status-icon.progress { color: #60a5fa; }
+.to-task-status-icon.pending  { color: var(--to-text-muted); }
+
+.to-task-title {
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--to-text);
+  margin: 0;
+  word-break: break-word;
+}
+
+.to-task-desc {
+  font-size: 0.82rem;
+  color: var(--to-text-muted);
+  margin: 0;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.to-task-date {
+  font-size: 0.75rem;
+  color: var(--to-text-muted);
+}
+
+.to-task-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+/* ── Badges ── */
+.to-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  letter-spacing: 0.2px;
+}
+
+.badge-high       { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+.badge-medium     { background: rgba(251,191,36,0.12);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+.badge-low        { background: rgba(52,211,153,0.12);  color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+.badge-pending    { background: rgba(107,122,158,0.12); color: var(--to-text-muted); border: 1px solid rgba(107,122,158,0.2); }
+.badge-inprogress { background: rgba(96,165,250,0.12);  color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+.badge-completed  { background: rgba(52,211,153,0.12);  color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+
+/* ── Ghost & Danger Buttons ── */
+.to-btn-ghost {
+  background: transparent;
+  border: 1px solid var(--to-border);
+  color: var(--to-text-soft) !important;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.to-btn-ghost:hover {
+  background: rgba(108,143,255,0.08);
+  border-color: var(--to-accent);
+  color: var(--to-text) !important;
+}
+
+.to-btn-danger {
+  background: transparent;
+  border: 1px solid rgba(248,113,113,0.25);
+  color: #f87171 !important;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.to-btn-danger:hover {
+  background: rgba(248,113,113,0.1);
+  border-color: rgba(248,113,113,0.5);
+}
+
+/* ── Empty State ── */
+.to-empty-state {
+  background: var(--to-surface);
+  border: 1px dashed var(--to-border);
+  border-radius: 18px;
+  padding: 3rem 2rem;
+}
+
+.to-empty-icon {
+  width: 64px; height: 64px;
+  background: rgba(108,143,255,0.08);
+  border: 1px solid var(--to-border);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: var(--to-text-muted);
+  margin: 0 auto;
+}
+
+/* ── Quote Strip ── */
+.to-quote-strip {
+  background: var(--to-surface);
+  border: 1px solid var(--to-border);
+  border-radius: 12px;
+  padding: 0.85rem 1.25rem;
+  font-size: 0.82rem;
+  color: var(--to-text-soft);
+  font-style: italic;
+}
+
+/* ── Select dropdown dark fix ── */
+.form-select.to-input {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7a9e' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 14px;
+  padding-right: 2.5rem !important;
+  cursor: pointer;
+}
+
+.form-select.to-input option {
+  background: var(--to-surface-2);
+  color: var(--to-text);
+}
+
+/* ── Responsive tweaks ── */
+@media (max-width: 576px) {
+  .to-task-card { flex-direction: column; }
+  .to-task-actions { width: 100%; justify-content: flex-end; }
+  .to-dash-title { font-size: 1.4rem; }
+}

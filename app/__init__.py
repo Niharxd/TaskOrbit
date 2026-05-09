@@ -36,13 +36,15 @@ def create_app():
     # --- Register Blueprints (route groups) ---
     from app.routes.main import main_bp
     from app.routes.auth import auth_bp
+    from app.routes.tasks import tasks_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(tasks_bp)
 
     # --- Create database tables if they don't exist ---
     with app.app_context():
-        from app.models import user  # noqa: F401 — import needed to register models
+        from app.models import user, task  # noqa: F401 — import needed to register models
         db.create_all()
 
     return app

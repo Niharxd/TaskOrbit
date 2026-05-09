@@ -13,9 +13,9 @@ def register():
     GET  — show the form
     POST — process the form data
     """
-    # If user is already logged in, send them to home
+    # If user is already logged in, send them to dashboard
     if current_user.is_authenticated:
-        return redirect(url_for("main.home"))
+        return redirect(url_for("tasks.dashboard"))
 
     if request.method == "POST":
         username = request.form.get("username", "").strip()
@@ -65,7 +65,7 @@ def login():
     POST — validate credentials and log the user in
     """
     if current_user.is_authenticated:
-        return redirect(url_for("main.home"))
+        return redirect(url_for("tasks.dashboard"))
 
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
@@ -82,9 +82,9 @@ def login():
             login_user(user)
             flash(f"Welcome back, {user.username}!", "success")
 
-            # Redirect to the page they were trying to visit, or home
+            # Redirect to the page they were trying to visit, or dashboard
             next_page = request.args.get("next")
-            return redirect(next_page or url_for("main.home"))
+            return redirect(next_page or url_for("tasks.dashboard"))
         else:
             flash("Invalid email or password.", "danger")
             return redirect(url_for("auth.login"))

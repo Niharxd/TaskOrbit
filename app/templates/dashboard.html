@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — TaskOrbit{% endblock %}
+
+{% block content %}
+<section class="to-dashboard-section">
+  <div class="container py-5">
+
+    <!-- ── Welcome Row ── -->
+    <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center
+                justify-content-between gap-3 mb-5">
+      <div>
+        <p class="to-section-eyebrow mb-1">Your workspace</p>
+        <h2 class="to-dash-title mb-1">
+          Hey, {{ current_user.username }}
+        </h2>
+        <p class="to-dash-subtitle mb-0">
+          {% if stats.total == 0 %}
+            No tasks yet — add your first one below.
+          {% elif stats.completed == stats.total %}
+            All tasks completed. Great work!
+          {% else %}
+            You have <strong style="color:var(--to-text);">{{ stats.total - stats.completed }}</strong>
+            task{{ 's' if (stats.total - stats.completed) != 1 }} left to finish.
+          {% endif %}
+        </p>
+      </div>
+      <a href="{{ url_for('tasks.add_task') }}" class="btn to-btn-accent px-4 flex-shrink-0">
+        <i class="bi bi-plus-lg me-2"></i>Add Task
+      </a>
+    </div>
+
+    <!-- ── Stats Cards ── -->
+    <div class="row g-3 mb-5">
+      <div class="col-6 col-md-3">
+        <div class="to-stat-card">
+          <div class="to-stat-card-icon" style="background:rgba(108,143,255,0.1); color:var(--to-accent);">
+            <i class="bi bi-list-task"></i>
+          </div>
+          <div class="to-stat-card-num">{{ stats.total }}</div>
+          <div class="to-stat-card-label">Total Tasks</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="to-stat-card">
+          <div class="to-stat-card-icon" style="background:rgba(251,191,36,0.1); color:#fbbf24;">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <div class="to-stat-card-num">{{ stats.pending }}</div>
+          <div class="to-stat-card-label">Pending</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="to-stat-card">
+          <div class="to-stat-card-icon" style="background:rgba(96,165,250,0.1); color:#60a5fa;">
+            <i class="bi bi-arrow-repeat"></i>
+          </div>
+          <div class="to-stat-card-num">{{ stats.in_progress }}</div>
+          <div class="to-stat-card-label">In Progress</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="to-stat-card">
+          <div class="to-stat-card-icon" style="background:rgba(52,211,153,0.1); color:#34d399;">
+            <i class="bi bi-check2-circle"></i>
+          </div>
+          <div class="to-stat-card-num">{{ stats.completed }}</div>
+          <div class="to-stat-card-label">Completed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Task List ── -->
+    {% if tasks %}
+
+      <!-- Progress bar -->
+      {% if stats.total > 0 %}
+        {% set pct = ((stats.completed / stats.total) * 100) | int %}
+        <div class="mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small" style="color:var(--to-text-muted);">Overall progress</span>
+            <span class="small fw-semibold" style="color:var(--to-accent);">{{ pct }}%</span>
+          </div>
+          <div class="to-progress-track">
+            <div class="to-progress-fill" style="width:{{ pct }}%;"></div>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="row g-3">
+        {% for task in tasks %}
+        <div class="col-12">
+          <div class="to-task-card
+            {% if task.status == 'Completed' %}to-task-done{% endif %}">
+
+            <!-- Left: title + meta -->
+            <div class="to-task-left">
+              <!-- Status icon -->
+              <div class="to-task-status-icon
+                {% if task.status == 'Completed' %}done
+                {% elif task.status == 'In Progress' %}progress
+                {% else %}pending{% endif %}">
+                {% if task.status == 'Completed' %}
+                  <i class="bi bi-check-circle-fill"></i>
+                {% elif task.status == 'In Progress' %}
+                  <i class="bi bi-circle-half"></i>
+                {% else %}
+                  <i class="bi bi-circle"></i>
+                {% endif %}
+              </div>
+
+              <div>
+                <p class="to-task-title mb-1">{{ task.title }}</p>
+                {% if task.description %}
+                  <p class="to-task-desc mb-2">{{ task.description }}</p>
+                {% endif %}
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                  <!-- Priority badge -->
+                  <span class="to-badge
+                    {% if task.priority == 'High' %}badge-high
+                    {% elif task.priority == 'Medium' %}badge-medium
+                    {% else %}badge-low{% endif %}">
+                    {% if task.priority == 'High' %}<i class="bi bi-arrow-up-circle-fill me-1"></i>
+                    {% elif task.priority == 'Medium' %}<i class="bi bi-dash-circle-fill me-1"></i>
+                    {% else %}<i class="bi bi-arrow-down-circle-fill me-1"></i>{% endif %}
+                    {{ task.priority }}
+                  </span>
+                  <!-- Status badge -->
+                  <span class="to-badge
+                    {% if task.status == 'Completed' %}badge-completed
+                    {% elif task.status == 'In Progress' %}badge-inprogress
+                    {% else %}badge-pending{% endif %}">
+                    {{ task.status }}
+                  </span>
+                  <!-- Date -->
+                  <span class="to-task-date">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    {{ task.created_date.strftime('%b %d, %Y') }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: actions -->
+            <div class="to-task-actions">
+              <a href="{{ url_for('tasks.edit_task', task_id=task.id) }}"
+                 class="btn to-btn-ghost btn-sm">
+                <i class="bi bi-pencil me-1"></i>Edit
+              </a>
+              <!-- Delete uses a small form so we can POST (no JS required) -->
+              <form method="POST"
+                    action="{{ url_for('tasks.delete_task', task_id=task.id) }}"
+                    class="d-inline"
+                    onsubmit="return confirm('Delete this task? This cannot be undone.');">
+                <button type="submit" class="btn to-btn-danger btn-sm">
+                  <i class="bi bi-trash3 me-1"></i>Delete
+                </button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+    {% else %}
+      <!-- ── Empty State ── -->
+      <div class="to-empty-state text-center py-5">
+        <div class="to-empty-icon mb-4">
+          <i class="bi bi-inbox"></i>
+        </div>
+        <h5 class="mb-2" style="color:var(--to-text);">No tasks yet</h5>
+        <p class="mb-4" style="color:var(--to-text-muted); font-size:0.9rem;">
+          Your orbit is empty. Add your first task to get started.
+        </p>
+        <a href="{{ url_for('tasks.add_task') }}" class="btn to-btn-accent px-4">
+          <i class="bi bi-plus-lg me-2"></i>Add Your First Task
+        </a>
+      </div>
+    {% endif %}
+
+    <!-- ── Motivational quote ── -->
+    <div class="to-quote-strip mt-5">
+      <i class="bi bi-quote me-2" style="color:var(--to-accent); opacity:0.6;"></i>
+      <span>"The secret of getting ahead is getting started."</span>
+      <span class="ms-2" style="color:var(--to-text-muted);">— Mark Twain</span>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

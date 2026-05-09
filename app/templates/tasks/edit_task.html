@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Edit Task — TaskOrbit{% endblock %}
+
+{% block content %}
+<section class="to-auth-section d-flex align-items-center">
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="row justify-content-center">
+      <div class="col-sm-10 col-md-7 col-lg-5">
+
+        <div class="to-auth-card p-4 p-md-5">
+
+          <!-- Header -->
+          <div class="text-center mb-4">
+            <div class="to-auth-icon mb-3">
+              <i class="bi bi-pencil-square"></i>
+            </div>
+            <p class="to-auth-logo mb-1">TaskOrbit</p>
+            <h4 class="mb-1">Edit Task</h4>
+            <p class="small mb-0" style="color:var(--to-text-muted);">
+              Update the details for this task.
+            </p>
+          </div>
+
+          <!-- Form -->
+          <form method="POST"
+                action="{{ url_for('tasks.edit_task', task_id=task.id) }}"
+                novalidate>
+
+            <div class="mb-3">
+              <label for="title" class="form-label">Task Title <span style="color:#f87171;">*</span></label>
+              <div class="to-input-group">
+                <i class="bi bi-pencil to-input-icon"></i>
+                <input type="text" class="form-control to-input" id="title" name="title"
+                       value="{{ task.title }}" required maxlength="200"/>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label">Description <span style="color:var(--to-text-muted); font-weight:400;">(optional)</span></label>
+              <textarea class="form-control to-input" id="description" name="description"
+                        rows="3" style="resize:vertical;">{{ task.description or '' }}</textarea>
+            </div>
+
+            <div class="row g-3 mb-4">
+              <div class="col-6">
+                <label for="priority" class="form-label">Priority</label>
+                <select class="form-select to-input" id="priority" name="priority">
+                  {% for p in priorities %}
+                    <option value="{{ p }}" {% if p == task.priority %}selected{% endif %}>{{ p }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-6">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select to-input" id="status" name="status">
+                  {% for s in statuses %}
+                    <option value="{{ s }}" {% if s == task.status %}selected{% endif %}>{{ s }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn to-btn-accent w-100 py-2">
+              <i class="bi bi-check-lg me-2"></i>Save Changes
+            </button>
+
+          </form>
+
+          <div class="to-divider">or</div>
+
+          <p class="text-center small mb-0" style="color:var(--to-text-muted);">
+            Don't want to save?
+            <a href="{{ url_for('tasks.dashboard') }}" class="to-link ms-1">Back to Dashboard</a>
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
