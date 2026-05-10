@@ -13,6 +13,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <!-- Custom styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <style>
+    body { opacity: 0; transition: opacity 0.25s ease; }
+    body.loaded { opacity: 1; }
+  </style>
 </head>
 <body>
 
@@ -39,12 +43,20 @@
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('tasks.dashboard') }}">
                 <i class="bi bi-grid-3x3-gap me-1"></i>Dashboard
+                {% if stats is defined and stats.total > 0 %}
+                  <span class="to-nav-badge">{{ stats.total }}</span>
+                {% endif %}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('analytics.analytics') }}">
+                <i class="bi bi-bar-chart-line me-1"></i>Analytics
               </a>
             </li>
             <li class="nav-item ms-lg-2">
-              <span class="nav-link" style="color: var(--to-text-soft) !important;">
+              <a class="nav-link" href="{{ url_for('profile.profile') }}" style="color: var(--to-text-soft) !important;">
                 <i class="bi bi-person-circle me-1"></i>{{ current_user.username }}
-              </span>
+              </a>
             </li>
             <li class="nav-item">
               <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('auth.logout') }}">
@@ -115,6 +127,17 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  {% if current_user.is_authenticated %}
+  <!-- Socket.IO client — only loaded for logged-in users -->
+  <script src="https://cdn.jsdelivr.net/npm/socket.io@4.7.2/client-dist/socket.io.min.js"></script>
+  {% endif %}
+
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+  <!-- Toast container for real-time notifications -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  {% block scripts %}{% endblock %}
 </body>
 </html>

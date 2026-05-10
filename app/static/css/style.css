@@ -1104,3 +1104,173 @@ body::after {
   .to-task-actions { width: 100%; justify-content: flex-end; }
   .to-dash-title { font-size: 1.4rem; }
 }
+
+/* =============================================
+   ANALYTICS
+   ============================================= */
+.to-analytics-card {
+  background: var(--to-surface);
+  border: 1px solid var(--to-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.to-analytics-card-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--to-text-muted);
+  margin: 0;
+}
+
+.to-chart-wrap {
+  position: relative;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+/* =============================================
+   TOAST NOTIFICATIONS
+   ============================================= */
+#toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  pointer-events: none;
+}
+
+.to-toast {
+  background: var(--to-surface-2);
+  border: 1px solid var(--to-border-hover);
+  border-radius: 12px;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--to-text-soft);
+  display: flex;
+  align-items: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  max-width: 300px;
+}
+
+.to-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.to-toast .bi { color: var(--to-accent); }
+
+/* ── Done / Undo toggle buttons ── */
+.to-btn-toggle {
+  background: transparent;
+  border: 1px solid rgba(52,211,153,0.3);
+  color: #34d399 !important;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.to-btn-toggle:hover {
+  background: rgba(52,211,153,0.1);
+  border-color: rgba(52,211,153,0.6);
+}
+
+.to-btn-toggle-undo {
+  background: transparent;
+  border: 1px solid rgba(107,122,158,0.3);
+  color: var(--to-text-muted) !important;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.to-btn-toggle-undo:hover {
+  background: rgba(107,122,158,0.08);
+  border-color: rgba(107,122,158,0.5);
+  color: var(--to-text-soft) !important;
+}
+
+/* ── Navbar task count badge ── */
+.to-nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--to-gradient);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 100px;
+  padding: 0 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* ── Due date badges ── */
+.badge-due {
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.2);
+}
+
+.badge-overdue {
+  background: rgba(248,113,113,0.12);
+  color: #f87171;
+  border: 1px solid rgba(248,113,113,0.25);
+}
+
+/* ── Profile page ── */
+.to-profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--to-gradient);
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 24px rgba(108,143,255,0.3);
+}
+
+.to-profile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--to-border);
+}
+
+.to-profile-row:last-child { border-bottom: none; }
+
+.to-profile-label {
+  color: var(--to-text-muted);
+  font-weight: 500;
+}
+
+.to-profile-value {
+  color: var(--to-text-soft);
+  font-weight: 500;
+  text-align: right;
+  word-break: break-all;
+}
+
+/* ── Date input dark fix ── */
+input[type="date"].to-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}

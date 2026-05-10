@@ -1,7 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, Response
 from flask_login import login_required, current_user
-from app import db
+from app import db, socketio
 from app.models.task import Task
+import csv
+import io
+from datetime import date
 
 tasks_bp = Blueprint("tasks", __name__)
 
@@ -32,16 +35,7 @@ def validate_task_input(title, priority, status):
 @login_required
 def dashboard():
     tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.created_date.desc()).all()
-
-    # Simple stats for the summary cards
-    stats = {
-        "total":       len(tasks),
-        "pending":     sum(1 for t in tasks if t.status == "Pending"),
-        "in_progress": sum(1 for t in tasks if t.status == "In Progress"),
-        "completed":   sum(1 for t in tasks if t.status == "Completed"),
-    }
-
-    return render_template("dashboard.html", tasks=tasks, stats=stats)
+    return render_template("dashboard.html", tasks=tasks)
 
 
 # ─────────────────────────────────────────────
@@ -56,11 +50,21 @@ def add_task():
         description = request.form.get("description", "").strip()
         priority    = request.form.get("priority", "Medium")
         status      = request.form.get("status", "Pending")
+        due_date_str = request.form.get("due_date", "").strip()
 
         error = validate_task_input(title, priority, status)
         if error:
             flash(error, "danger")
             return redirect(url_for("tasks.add_task"))
+
+        # Parse due date if provided
+        due_date = None
+        if due_date_str:
+            try:
+                due_date = date.fromisoformat(due_date_str)
+            except ValueError:
+                flash("Invalid due date format.", "danger")
+                return redirect(url_for("tasks.add_task"))
 
         task = Task(
             user_id=current_user.id,
@@ -68,9 +72,13 @@ def add_task():
             description=description,
             priority=priority,
             status=status,
+            due_date=due_date,
         )
         db.session.add(task)
         db.session.commit()
+
+        # Notify all connected clients about the new task
+        socketio.emit("task_event", {"type": "created", "message": f'Task "{title}" created successfully.'})
 
         flash("Task added successfully!", "success")
         return redirect(url_for("tasks.dashboard"))
@@ -94,21 +102,36 @@ def edit_task(task_id):
         return redirect(url_for("tasks.dashboard"))
 
     if request.method == "POST":
-        title       = request.form.get("title", "").strip()
-        description = request.form.get("description", "").strip()
-        priority    = request.form.get("priority", task.priority)
-        status      = request.form.get("status", task.status)
+        title        = request.form.get("title", "").strip()
+        description  = request.form.get("description", "").strip()
+        priority     = request.form.get("priority", task.priority)
+        status       = request.form.get("status", task.status)
+        due_date_str = request.form.get("due_date", "").strip()
 
         error = validate_task_input(title, priority, status)
         if error:
             flash(error, "danger")
             return redirect(url_for("tasks.edit_task", task_id=task_id))
 
+        due_date = task.due_date
+        if due_date_str:
+            try:
+                due_date = date.fromisoformat(due_date_str)
+            except ValueError:
+                flash("Invalid due date format.", "danger")
+                return redirect(url_for("tasks.edit_task", task_id=task_id))
+        elif due_date_str == "":
+            due_date = None
+
         task.title       = title
         task.description = description
         task.priority    = priority
         task.status      = status
+        task.due_date    = due_date
         db.session.commit()
+
+        # Notify all connected clients about the update
+        socketio.emit("task_event", {"type": "updated", "message": f'Task "{task.title}" updated.'})
 
         flash("Task updated successfully!", "success")
         return redirect(url_for("tasks.dashboard"))
@@ -116,6 +139,31 @@ def edit_task(task_id):
     return render_template("tasks/edit_task.html", task=task,
                            priorities=VALID_PRIORITIES,
                            statuses=VALID_STATUSES)
+
+
+# ─────────────────────────────────────────────
+#  TOGGLE COMPLETE
+# ─────────────────────────────────────────────
+
+@tasks_bp.route("/tasks/toggle/<int:task_id>", methods=["POST"])
+@login_required
+def toggle_task(task_id):
+    task = Task.query.get_or_404(task_id)
+    if task.user_id != current_user.id:
+        flash("You don't have permission to update that task.", "danger")
+        return redirect(url_for("tasks.dashboard"))
+
+    # Flip between Completed and In Progress
+    if task.status == "Completed":
+        task.status = "In Progress"
+        msg = f'Task "{task.title}" marked as In Progress.'
+    else:
+        task.status = "Completed"
+        msg = f'Task "{task.title}" marked as completed.'
+
+    db.session.commit()
+    socketio.emit("task_event", {"type": "updated", "message": msg})
+    return redirect(url_for("tasks.dashboard"))
 
 
 # ─────────────────────────────────────────────
@@ -130,10 +178,45 @@ def delete_task(task_id):
         flash("You don't have permission to delete that task.", "danger")
         return redirect(url_for("tasks.dashboard"))
 
+    title = task.title
     db.session.delete(task)
     db.session.commit()
+
+    # Notify all connected clients about the deletion
+    socketio.emit("task_event", {"type": "deleted", "message": f'Task "{title}" deleted.'})
+
     flash("Task deleted.", "info")
     return redirect(url_for("tasks.dashboard"))
+
+
+# ─────────────────────────────────────────────
+#  CSV EXPORT
+# ─────────────────────────────────────────────
+
+@tasks_bp.route("/tasks/export")
+@login_required
+def export_tasks():
+    tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.created_date.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Title", "Description", "Priority", "Status", "Due Date", "Created Date"])
+    for t in tasks:
+        writer.writerow([
+            t.title,
+            t.description or "",
+            t.priority,
+            t.status,
+            t.due_date.strftime("%Y-%m-%d") if t.due_date else "",
+            t.created_date.strftime("%Y-%m-%d %H:%M"),
+        ])
+
+    output.seek(0)
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=taskorbit_tasks.csv"}
+    )
 
 
 # ─────────────────────────────────────────────

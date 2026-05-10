@@ -1,9 +1,7 @@
-from app import create_app
+from app import create_app, socketio
 
-# Create the Flask app using our factory function
 app = create_app()
 
 if __name__ == "__main__":
-    # debug=True gives helpful error pages during development
-    # Turn this OFF in production!
-    app.run(debug=True)
+    # Use socketio.run instead of app.run to support WebSockets
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)

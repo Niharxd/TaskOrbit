@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}Analytics — TaskOrbit{% endblock %}
+
+{% block content %}
+<section class="to-dashboard-section">
+  <div class="container py-5">
+
+    <!-- ── Header ── -->
+    <div class="mb-5">
+      <p class="to-section-eyebrow mb-1">Insights</p>
+      <h2 class="to-dash-title mb-1">Analytics</h2>
+      <p class="to-dash-subtitle mb-0">A breakdown of your task activity and progress.</p>
+    </div>
+
+    {% if data.total == 0 %}
+      <!-- Empty state -->
+      <div class="to-empty-state text-center py-5">
+        <div class="to-empty-icon mb-4"><i class="bi bi-bar-chart"></i></div>
+        <h5 class="mb-2" style="color:var(--to-text);">No data yet</h5>
+        <p class="mb-4" style="color:var(--to-text-muted); font-size:0.9rem;">
+          Add some tasks first to see your analytics here.
+        </p>
+        <a href="{{ url_for('tasks.add_task') }}" class="btn to-btn-accent px-4">
+          <i class="bi bi-plus-lg me-2"></i>Add a Task
+        </a>
+      </div>
+
+    {% else %}
+
+      <!-- ── Summary Cards ── -->
+      <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+          <div class="to-stat-card">
+            <div class="to-stat-card-icon" style="background:rgba(108,143,255,0.1); color:var(--to-accent);">
+              <i class="bi bi-list-task"></i>
+            </div>
+            <div class="to-stat-card-num">{{ data.total }}</div>
+            <div class="to-stat-card-label">Total Tasks</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="to-stat-card">
+            <div class="to-stat-card-icon" style="background:rgba(52,211,153,0.1); color:#34d399;">
+              <i class="bi bi-check2-circle"></i>
+            </div>
+            <div class="to-stat-card-num">{{ data.completed }}</div>
+            <div class="to-stat-card-label">Completed</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="to-stat-card">
+            <div class="to-stat-card-icon" style="background:rgba(251,191,36,0.1); color:#fbbf24;">
+              <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="to-stat-card-num">{{ data.pending }}</div>
+            <div class="to-stat-card-label">Pending</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="to-stat-card">
+            <div class="to-stat-card-icon" style="background:rgba(108,143,255,0.1); color:var(--to-accent);">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <div class="to-stat-card-num">{{ data.completion_pct }}%</div>
+            <div class="to-stat-card-label">Completion Rate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Completion Progress ── -->
+      <div class="to-analytics-card mb-4">
+        <p class="to-analytics-card-title mb-3">Overall Completion</p>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="small" style="color:var(--to-text-muted);">
+            {{ data.completed }} of {{ data.total }} tasks completed
+          </span>
+          <span class="small fw-semibold" style="color:var(--to-accent);">{{ data.completion_pct }}%</span>
+        </div>
+        <div class="to-progress-track">
+          <div class="to-progress-fill" style="width:{{ data.completion_pct }}%;"></div>
+        </div>
+      </div>
+
+      <!-- ── Charts ── -->
+      <div class="row g-4 mb-4">
+
+        <!-- Pie: Status Distribution -->
+        <div class="col-md-6">
+          <div class="to-analytics-card h-100">
+            <p class="to-analytics-card-title mb-4">Status Distribution</p>
+            <div class="to-chart-wrap">
+              <canvas id="statusChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bar: Priority Distribution -->
+        <div class="col-md-6">
+          <div class="to-analytics-card h-100">
+            <p class="to-analytics-card-title mb-4">Priority Distribution</p>
+            <div class="to-chart-wrap">
+              <canvas id="priorityChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Priority Breakdown Text ── -->
+      <div class="to-analytics-card">
+        <p class="to-analytics-card-title mb-3">Priority Breakdown</p>
+        <div class="row g-3">
+          <div class="col-4">
+            <div class="text-center">
+              <div class="to-stat-card-num" style="color:#f87171;">{{ data.priority_distribution.High }}</div>
+              <div class="to-stat-card-label">High</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="text-center">
+              <div class="to-stat-card-num" style="color:#fbbf24;">{{ data.priority_distribution.Medium }}</div>
+              <div class="to-stat-card-label">Medium</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="text-center">
+              <div class="to-stat-card-num" style="color:#34d399;">{{ data.priority_distribution.Low }}</div>
+              <div class="to-stat-card-label">Low</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    {% endif %}
+
+  </div>
+</section>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  // Shared chart defaults to match the dark theme
+  Chart.defaults.color = "#6b7a9e";
+  Chart.defaults.borderColor = "rgba(99,130,255,0.08)";
+  Chart.defaults.font.family = "Inter, sans-serif";
+  Chart.defaults.font.size = 12;
+
+  {% if data.total > 0 %}
+
+  // ── Status Pie Chart ──
+  new Chart(document.getElementById("statusChart"), {
+    type: "doughnut",
+    data: {
+      labels: ["Pending", "In Progress", "Completed"],
+      datasets: [{
+        data: [
+          {{ data.status_distribution.Pending }},
+          {{ data.status_distribution["In Progress"] }},
+          {{ data.status_distribution.Completed }}
+        ],
+        backgroundColor: [
+          "rgba(107,122,158,0.7)",
+          "rgba(96,165,250,0.7)",
+          "rgba(52,211,153,0.7)"
+        ],
+        borderColor: [
+          "rgba(107,122,158,1)",
+          "rgba(96,165,250,1)",
+          "rgba(52,211,153,1)"
+        ],
+        borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "bottom", labels: { padding: 16, boxWidth: 12 } }
+      },
+      cutout: "60%",
+    }
+  });
+
+  // ── Priority Bar Chart ──
+  new Chart(document.getElementById("priorityChart"), {
+    type: "bar",
+    data: {
+      labels: ["Low", "Medium", "High"],
+      datasets: [{
+        label: "Tasks",
+        data: [
+          {{ data.priority_distribution.Low }},
+          {{ data.priority_distribution.Medium }},
+          {{ data.priority_distribution.High }}
+        ],
+        backgroundColor: [
+          "rgba(52,211,153,0.6)",
+          "rgba(251,191,36,0.6)",
+          "rgba(248,113,113,0.6)"
+        ],
+        borderColor: [
+          "rgba(52,211,153,1)",
+          "rgba(251,191,36,1)",
+          "rgba(248,113,113,1)"
+        ],
+        borderWidth: 1,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 },
+          grid: { color: "rgba(99,130,255,0.07)" }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  {% endif %}
+</script>
+{% endblock %}

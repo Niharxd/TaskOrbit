@@ -24,9 +24,14 @@
           {% endif %}
         </p>
       </div>
-      <a href="{{ url_for('tasks.add_task') }}" class="btn to-btn-accent px-4 flex-shrink-0">
-        <i class="bi bi-plus-lg me-2"></i>Add Task
-      </a>
+      <div class="d-flex gap-2 flex-shrink-0">
+        <a href="{{ url_for('tasks.export_tasks') }}" class="btn to-btn-ghost px-3">
+          <i class="bi bi-download me-2"></i>Export CSV
+        </a>
+        <a href="{{ url_for('tasks.add_task') }}" class="btn to-btn-accent px-4">
+          <i class="bi bi-plus-lg me-2"></i>Add Task
+        </a>
+      </div>
     </div>
 
     <!-- ── Stats Cards ── -->
@@ -136,12 +141,34 @@
                     <i class="bi bi-calendar3 me-1"></i>
                     {{ task.created_date.strftime('%b %d, %Y') }}
                   </span>
+                  <!-- Due date -->
+                  {% if task.due_date %}
+                    <span class="to-badge {% if task.is_overdue %}badge-overdue{% else %}badge-due{% endif %}">
+                      <i class="bi bi-calendar-event me-1"></i>
+                      {% if task.is_overdue %}Overdue · {% endif %}
+                      Due {{ task.due_date.strftime('%b %d, %Y') }}
+                    </span>
+                  {% endif %}
                 </div>
               </div>
             </div>
 
             <!-- Right: actions -->
             <div class="to-task-actions">
+              <!-- Toggle complete button -->
+              <form method="POST"
+                    action="{{ url_for('tasks.toggle_task', task_id=task.id) }}"
+                    class="d-inline">
+                {% if task.status == 'Completed' %}
+                  <button type="submit" class="btn to-btn-toggle-undo btn-sm" title="Mark as In Progress">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>Undo
+                  </button>
+                {% else %}
+                  <button type="submit" class="btn to-btn-toggle btn-sm" title="Mark as Completed">
+                    <i class="bi bi-check-lg me-1"></i>Done
+                  </button>
+                {% endif %}
+              </form>
               <a href="{{ url_for('tasks.edit_task', task_id=task.id) }}"
                  class="btn to-btn-ghost btn-sm">
                 <i class="bi bi-pencil me-1"></i>Edit
