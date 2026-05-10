@@ -8,26 +8,21 @@ TaskOrbit is a full-stack task management web application built with Flask and P
 
 ## Screenshots
 
-**Home**
-![Home](app/static/images/home.png)
+| Home | Dashboard |
+|------|----------|
+| ![Home](app/static/images/home.png) | ![Dashboard](app/static/images/dashboard.png) |
 
-**Dashboard**
-![Dashboard](app/static/images/dashboard.png)
+| Analytics | Profile |
+|-----------|--------|
+| ![Analytics](app/static/images/analytics.png) | ![Profile](app/static/images/profile.png) |
 
-**Analytics**
-![Analytics](app/static/images/analytics.png)
+| Login | Register |
+|-------|----------|
+| ![Login](app/static/images/login.png) | ![Register](app/static/images/register.png) |
 
-**Profile**
-![Profile](app/static/images/profile.png)
-
-**Login**
-![Login](app/static/images/login.png)
-
-**Register**
-![Register](app/static/images/register.png)
-
-**Add Task**
-![Add Task](app/static/images/addtask.png)
+| Add Task |
+|----------|
+| ![Add Task](app/static/images/addtask.png) |
 
 ---
 
@@ -36,12 +31,12 @@ TaskOrbit is a full-stack task management web application built with Flask and P
 - User registration and login with input validation
 - Secure password hashing using Werkzeug
 - Session-based authentication with Flask-Login
-- Protected routes — unauthenticated users are redirected to login
+- Protected routes - unauthenticated users are redirected to login
 - Flash messages for all user-facing actions
 - Task dashboard with summary statistics and progress tracking
-- Full task CRUD — create, read, update, delete
-- Priority levels — Low, Medium, High
-- Status tracking — Pending, In Progress, Completed
+- Full task CRUD - create, read, update, delete
+- Priority levels - Low, Medium, High
+- Status tracking - Pending, In Progress, Completed
 - Due dates with overdue detection and highlighting
 - One-click task completion toggle
 - CSV export for all tasks
@@ -200,7 +195,7 @@ Database tables are created automatically on first run.
 After logging in, users land on the dashboard which shows:
 
 - A personalized welcome message with task summary
-- Four stat cards — Total, Pending, In Progress, Completed
+- Four stat cards - Total, Pending, In Progress, Completed
 - An overall completion progress bar
 - A full task list with priority, status, and due date badges
 - One-click Done / Undo toggle per task
@@ -258,14 +253,14 @@ Creates a new task.
 }
 ```
 
-**Response 201** — Returns the created task object.
+**Response 201** - Returns the created task object.
 
 ### PUT /api/tasks/\<id\>
 
 Updates an existing task. Send only the fields you want to change.
 
-**Response 200** — Returns the updated task object.
-**Response 403** — Task belongs to a different user.
+**Response 200** - Returns the updated task object.
+**Response 403** - Task belongs to a different user.
 
 ### DELETE /api/tasks/\<id\>
 
@@ -276,7 +271,7 @@ Deletes a task permanently.
 { "message": "Task deleted." }
 ```
 
-**Response 403** — Task belongs to a different user.
+**Response 403** - Task belongs to a different user.
 
 ---
 
@@ -305,9 +300,9 @@ TaskOrbit uses Flask-SocketIO to broadcast real-time notifications to all connec
 The frontend connects automatically when a user is logged in. Notifications appear as small toast messages in the bottom-right corner without requiring a page refresh.
 
 Events emitted:
-- `task_event` with type `created` — when a task is added
-- `task_event` with type `updated` — when a task is edited
-- `task_event` with type `deleted` — when a task is removed
+- `task_event` with type `created` - when a task is added
+- `task_event` with type `updated` - when a task is edited
+- `task_event` with type `deleted` - when a task is removed
 
 ---
 
